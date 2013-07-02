@@ -121,6 +121,15 @@
       <li><abbr id="testWording22" class="towords" title="94608000"></abbr> [1095 days]</li>
     </ul>
 
+    <h2>Custom ranges</h2>
+
+    <ul>
+      <li><abbr id="testCustom1" class="tocustom" title="1800"></abbr> [30 min]</li>
+      <li><abbr id="testCustom2" class="tocustom" title="14400"></abbr> [4 hours]</li>
+      <li><abbr id="testCustom3" class="tocustom" title="345600"></abbr> [4 days]</li>
+      <li><abbr id="testCustom4" class="tocustom" title="691200"></abbr> [8 days]</li>
+    </ul>
+
     <h2>Settings</h2>
 
     <ul>
@@ -233,6 +242,10 @@
       });
 
       $("abbr.towords").each(toWords);
+
+      loadCustomRange();
+      $("abbr.tocustom").each(toWords);
+      unloadCustomRange();
 
       loadNumbers();
       $("abbr.tonumbers").each(toWords);
@@ -488,6 +501,28 @@
 
       test("1095 days", function () {
         ok(($("#testWording22").html() === "3 years ago"), "Correctly parsed");
+      });
+
+      module("Custom ranges");
+
+      test("30 min", function () {
+        ok(($("#testCustom1").html() === "about an hour ago"), "Correctly parsed");
+      });
+
+      test("4 hours", function () {
+        ok(($("#testCustom2").html() === "about 4 hours ago"), "Correctly parsed");
+      });
+
+      test("4 days", function () {
+        var date = new Date(new Date().getTime() - 345600 * 1000);
+        var str = jQuery.timeago.settings.strings.weekdaynames[date.getDay()];
+        ok(($("#testCustom3").html() === str), "Correctly parsed");
+      });
+
+      test("8 days", function () {
+        var date = new Date(new Date().getTime() - 691200 * 1000);
+        var str = jQuery.timeago.settings.strings.monthnames[date.getMonth()] + " " + date.getDate() + " " + date.getFullYear();
+        ok(($("#testCustom4").html() === str), "Correctly parsed");
       });
 
       module("Settings");

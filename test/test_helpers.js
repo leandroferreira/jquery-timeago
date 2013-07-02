@@ -44,7 +44,9 @@ function loadPigLatin() {
     month: "about-hay a-hay onth-may",
     months: "%d onths-may",
     year: "about-hay a-hay ear-yay",
-    years: "%d years-yay"
+    years: "%d years-yay",
+    weekdaynames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    monthnames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
   };
 }
 
@@ -99,7 +101,9 @@ function loadMillis() {
     month: millisSubstitution,
     months: millisSubstitution,
     year: millisSubstitution,
-    years: millisSubstitution
+    years: millisSubstitution,
+    weekdaynames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    monthnames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
   };
 }
 
@@ -121,4 +125,36 @@ function loadYoungOldYears() {
   jQuery.extend(jQuery.timeago.settings.strings, {
     years: function(value) { return (value < 21) ? "%d young years" : "%d old years"; }
   });
+}
+
+function loadCustomRange() {
+  var getSeconds = function(milis) {return Math.abs(milis) / 1000};
+  var getMinutes = function(milis) {return getSeconds(milis) / 60};
+  var getHours = function(milis) {return getMinutes(milis) / 60};
+  var getDays = function(milis) {return getHours(milis) / 24};
+  var getYears = function(milis) {return getDays(milis) / 365};
+
+  jQuery.timeago.settings.customRanges = [
+    {max:3600, substitute:function(number, millis) { // < 1 hour
+      return jQuery.timeago.settings.strings.hour;
+    }},
+    {max:86400, substitute:function(number, millis) { // < 1 day
+      var hours = getHours(millis);
+      return hours == 1 ? jQuery.timeago.settings.strings.hour : jQuery.timeago.settings.strings.hours;
+    }, getNumber:function(millis) {
+      return getHours(millis);
+    }},
+    {max:604800, noSuffix:true, substitute:function(number, millis) { // < 1 week
+      var date = new Date(new Date().getTime() - millis);
+      return jQuery.timeago.settings.strings.weekdaynames[date.getDay()];
+    }},
+    {max:0, noSuffix:true, substitute:function(number, millis) { // else
+      var date = new Date(new Date().getTime() - millis);
+      return jQuery.timeago.settings.strings.monthnames[date.getMonth()] + " " + date.getDate() + " " + date.getFullYear();
+    }}
+  ];
+}
+
+function unloadCustomRange() {
+  jQuery.timeago.settings.customRanges = null;
 }

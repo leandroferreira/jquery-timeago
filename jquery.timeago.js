@@ -42,6 +42,7 @@
       allowFuture: false,
       localeTitle: false,
       cutoff: 0,
+      customRanges: null, // array of ordered range objects containing max (secs from last to this) and substitute (string or function)
       strings: {
         prefixAgo: null,
         prefixFromNow: null,
@@ -59,7 +60,9 @@
         year: "about a year",
         years: "%d years",
         wordSeparator: " ",
-        numbers: []
+        numbers: [],
+        weekdaynames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        monthnames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
       }
     },
     inWords: function(distanceMillis) {
@@ -96,6 +99,21 @@
         days < 365 && substitute($l.months, Math.round(days / 30)) ||
         years < 1.5 && substitute($l.year, 1) ||
         substitute($l.years, Math.round(years));
+
+      // set words according to a custom range
+      if (this.settings.customRanges !== null) {
+        for(var i in this.settings.customRanges) {
+          if (this.settings.customRanges[i].max == 0 ||
+            distanceMillis < this.settings.customRanges[i].max * 1000) {
+            var number = distanceMillis;
+            if (this.settings.customRanges[i].getNumber != null) number = this.settings.customRanges[i].getNumber(distanceMillis);
+            words = substitute(this.settings.customRanges[i].substitute, number);
+            if (this.settings.customRanges[i].noPrefix) prefix = "";
+            if (this.settings.customRanges[i].noSuffix) suffix = "";
+            break;
+          }
+        }
+      }
 
       var separator = $l.wordSeparator || "";
       if ($l.wordSeparator === undefined) { separator = " "; }

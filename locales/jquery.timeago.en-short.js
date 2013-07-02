@@ -16,5 +16,7 @@ jQuery.timeago.settings.strings = {
   year: "1yr",
   years: "%dyr",
   wordSeparator: " ",
-  numbers: []
+  numbers: [],
+  weekdaynames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  monthnames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 };
